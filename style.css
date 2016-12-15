@@ -1,0 +1,8 @@
+body {
+	min-width: 350px;
+    background-color: #A3C2C2;
+ }
+
+ select {
+ 	display: inline;
+ }
