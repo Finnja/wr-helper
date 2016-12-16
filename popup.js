@@ -1,11 +1,9 @@
 $(document).ready(function() {
-	
-	console.log(historySearch('week'));
+	historySearch('week');
 
 	$(".selector").change(function() {
-  		results = historySearch(this.value);
-  		results.sort(myComp);
-		console.log(results)
+		$(".vocabWord").remove();
+		historySearch(this.value);
 	});
 });
 
@@ -20,32 +18,39 @@ function historySearch(length) {
 		'maxResults': 50
 	}, function(results) {
 		results.forEach(function(item) {
-			var wrSearchURL = item.url;
-			var wrSearchTerm = decodeURIComponent(item.url.slice(34)); // FIX URL PARSING
+			if (!item.url.includes('forum')) {
+				var wrSearchURL = item.url;
+				var wrSearchTerm = termFromURL(item.url);
 
-			chrome.history.getVisits({'url': wrSearchURL}, function(visitInfo) {
-				// vocab[wrSearchTerm] = visitInfo.length;
-				var n = 0;
-				visitInfo.forEach(function(visit) {
-					// visits within the last day/week/month
-					if (visit.visitTime > startTime) {
-						n = n + 1;
+				chrome.history.getVisits({'url': wrSearchURL}, function(visitInfo) {
+					var n = 0;
+					visitInfo.forEach(function(visit) {
+						// visits within the last day/week/month
+						if (visit.visitTime > startTime) {
+							n = n + 1;
+						}
+					})
+
+					newEntry = {
+						'freq': n,
+						'term': wrSearchTerm,
+						'url': wrSearchURL
 					}
-				})
 
-				newEntry = {
-					'freq': n,
-					'term': wrSearchTerm,
-					'url': wrSearchURL
-				}
-
-				vocab.push(newEntry);
-				vocab.sort(myComp);
-			});
+					vocab.push(newEntry);
+					vocab.sort(myComp);
+				});
+			}
 		});
 	});
 
-	return vocab;
+	setTimeout(function(){
+		vocab.forEach(function(word) {
+			$('body').append('<p class="vocabWord"><a href=' + word.url + '>' + word.term + '</p></a>');
+		});
+	}, 400);
+
+	// return vocab
 }
 
 function msTime(length) {
@@ -65,4 +70,14 @@ function msTime(length) {
 
 function myComp(a,b) {
   return b['freq'] - a['freq'];
+}
+
+function termFromURL(url) {
+	/* takes wordreference url and returns search term (or phrase)  */ 
+	if(url.includes('conj')) {
+		return decodeURIComponent(url.slice(49))
+	}
+	else {
+		return decodeURIComponent(url.slice(34))
+	}
 }
