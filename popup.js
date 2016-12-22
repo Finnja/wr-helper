@@ -1,16 +1,26 @@
 $(document).ready(function() {
-	historySearch('week');
+	historySearch('week', 'en-fr');
 
 	$(".selector").change(function() {
 		$(".vocabWord").remove();
-		historySearch(this.value);
+		historySearch(this.value, 'en-fr');
 	});
 });
 
 
-function historySearch(length) {
+function historySearch(length, lang) {
 	vocab = [];
 	startTime = msTime(length);
+
+	langKeywords = {
+		'en-fr': ['enfr', 'fren', 'FRVerbs'],
+		'en-es': ['enes', 'esen', 'ESVerbs'],
+		'fr-es': ['esfr', 'fres', 'FRVerbs', 'ESVerbs']
+	}
+
+	kw = langKeywords[lang];
+
+	console.log(kw)
 
 	chrome.history.search({
 		'text': 'wordreference',
@@ -18,9 +28,20 @@ function historySearch(length) {
 		'maxResults': 50
 	}, function(results) {
 		results.forEach(function(item) {
-			if (!item.url.includes('forum')) {
+
+			var kwPresent = multiWordSearch(item.url, kw);
+			console.log(item.url, item.url.length, kwPresent);
+
+			if (!item.url.includes('forum') && item.url.length > 29 && item.url.length < 65 && kwPresent) {
 				var wrSearchURL = item.url;
 				var wrSearchTerm = termFromURL(item.url);
+
+				if (item.url.includes('conj')){
+					var originLang = item.url.slice(34,36).toLowerCase();
+				}
+				else {
+					var originLang = item.url.slice(29,31).toLowerCase();
+				}
 
 				chrome.history.getVisits({'url': wrSearchURL}, function(visitInfo) {
 					var n = 0;
@@ -34,7 +55,8 @@ function historySearch(length) {
 					newEntry = {
 						'freq': n,
 						'term': wrSearchTerm,
-						'url': wrSearchURL
+						'url': wrSearchURL,
+						'lang': originLang
 					}
 
 					vocab.push(newEntry);
@@ -46,11 +68,11 @@ function historySearch(length) {
 
 	setTimeout(function(){
 		vocab.forEach(function(word) {
-			$('body').append('<p class="vocabWord"><a href=' + word.url + '>' + word.term + '</p></a>');
+			$('body').append('<p class="vocabWord"><a href=' + word.url + '>' + word.term + ' [' + word.lang + ']</p></a>');
 		});
 	}, 400);
 
-	// return vocab
+	console.log(vocab);
 }
 
 function msTime(length) {
@@ -81,3 +103,12 @@ function termFromURL(url) {
 		return decodeURIComponent(url.slice(34))
 	}
 }
+
+function multiWordSearch(text, searchWords) {
+	for (var i = searchWords.length - 1; i >= 0; i--) {
+		if (text.includes(searchWords[i])) return true;
+	 } 
+	return false;
+}
+
+
