@@ -1,9 +1,14 @@
 $(document).ready(function() {
 	historySearch('week', 'en-fr');
 
-	$(".selector").change(function() {
+	$("#date-selector").change(function() {
 		$(".vocabWord").remove();
-		historySearch(this.value, 'en-fr');
+		historySearch(this.value, $("#lang-selector").val());
+	});
+
+	$("#lang-selector").change(function() {
+		$(".vocabWord").remove();
+		historySearch($("#date-selector").val(), this.value);
 	});
 });
 
@@ -14,7 +19,7 @@ function historySearch(length, lang) {
 
 	langKeywords = {
 		'en-fr': ['enfr', 'fren', 'FRVerbs'],
-		'en-es': ['enes', 'esen', 'ESVerbs'],
+		'en-es': ['translation.asp', 'ESVerbs'],
 		'fr-es': ['esfr', 'fres', 'FRVerbs', 'ESVerbs']
 	}
 
@@ -30,17 +35,27 @@ function historySearch(length, lang) {
 		results.forEach(function(item) {
 
 			var kwPresent = multiWordSearch(item.url, kw);
-			console.log(item.url, item.url.length, kwPresent);
 
 			if (!item.url.includes('forum') && item.url.length > 29 && item.url.length < 65 && kwPresent) {
 				var wrSearchURL = item.url;
-				var wrSearchTerm = termFromURL(item.url);
+				var wrSearchTerm = termFromURL(item.url, lang);
+				var originLang;
 
 				if (item.url.includes('conj')){
-					var originLang = item.url.slice(34,36).toLowerCase();
+					originLang = item.url.slice(34,36).toLowerCase();
 				}
 				else {
-					var originLang = item.url.slice(29,31).toLowerCase();
+					if (lang == 'en-es') {
+						if (wrSearchURL.includes('tranword')) {
+							originLang = 'en'
+						}
+						else {
+							originLang = 'es';
+						}
+					}
+					else {
+						originLang = item.url.slice(29,31).toLowerCase();
+					}
 				}
 
 				chrome.history.getVisits({'url': wrSearchURL}, function(visitInfo) {
@@ -94,13 +109,24 @@ function myComp(a,b) {
   return b['freq'] - a['freq'];
 }
 
-function termFromURL(url) {
+function termFromURL(url, lang) {
 	/* takes wordreference url and returns search term (or phrase)  */ 
 	if(url.includes('conj')) {
-		return decodeURIComponent(url.slice(49))
-	}
+			return decodeURIComponent(url.slice(49))
+		}
+	
 	else {
-		return decodeURIComponent(url.slice(34))
+		if (lang == 'en-es'){
+			if (url.includes('tranword')) {
+				return decodeURIComponent(url.slice(57))
+			}
+			else {
+				return decodeURIComponent(url.slice(56))
+			} 
+		}
+		else {
+			return decodeURIComponent(url.slice(34))
+		}
 	}
 }
 
