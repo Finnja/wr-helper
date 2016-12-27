@@ -8,17 +8,19 @@
   </head>
 
   <body>
-    <h1 class="text"> Most frequently searched words this
-      <select name="time frame" class="selector" id="date-selector">
-        <option value="day">Day</option>
-        <option selected="selected" value="week">Week</option>
-        <option value="month">Month</option>
-      </select>
+    <div class="search-container">
       <select name="lang" class="selector" id="lang-selector">
         <option value="en-fr" selected="selected">🇫🇷 / 🇬🇧</option>
         <option value="en-es">🇪🇸 / 🇬🇧 </option>
         <option value="fr-es">🇫🇷 / 🇪🇸</option>
       </select>
-    </h1>
+      <h1 class="text"> words searched this</h1>
+      <select name="time frame" class="selector" id="date-selector">
+        <option value="day">Day</option>
+        <option selected="selected" value="week">Week</option>
+        <option value="month">Month</option>
+      </select>
+    </div>
+    <div class="results-container"></div>
   </body>
-</html> 
+</html>

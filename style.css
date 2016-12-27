@@ -1,8 +1,93 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
 body {
-	min-width: 350px;
-    background-color: #A3C2C2;
+	min-width: 300px;
+	min-height: 350px;
+    background-color: #E8E8E8;
  }
 
- select {
- 	display: inline;
+ .search-container {
+ 	background-color: #D0D0D0;
+ 	width: 100%;
+ 	height: 65px;
+ 	padding: 1px;
  }
+
+ .search-container h1 {
+ 	font-size: 18px;
+ 	text-align: center;
+ 	font-family: 'Avenir', 'Arial', sans-serif;
+ 	font-weight: 200;
+ 	padding: 8px 0;
+ }
+
+/* selector placement – to be changed */
+select {
+	outline: none;
+}
+ 
+#date-selector {
+ 	position: absolute;
+ 	right: 2px;
+ 	top: 25px;
+ }
+
+#lang-selector {
+ 	position: absolute;
+ 	left: 2px;
+ 	top: 25px;
+ }
+
+/* reults styling */
+.results-container {
+	min-height: 285px;
+	position: relative;
+	padding-left: 10px;
+}
+
+.vocab-word {
+	width: 40%;
+	float: left;
+	border-radius: 5px;
+	height: 30px;
+	margin-top: 10px;
+	padding-left: 6px;
+
+	line-height: 5px;
+	vertical-align: middle;
+}
+
+.vocab-word#en {
+	background-color: #FF7284;
+}
+
+.vocab-word#fr {
+	background-color: #9EBFE5;
+}
+
+div div:nth-child(odd) { /* left-hand column */
+	margin-right: 17px;
+}
+
+div div:nth-child(even) { /* right-hand column */
+	margin-left: 17px;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+}
+
+
+
+
+
+
+
+

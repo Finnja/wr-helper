@@ -10,6 +10,12 @@ $(document).ready(function() {
 		$(".vocabWord").remove();
 		historySearch($("#date-selector").val(), this.value);
 	});
+
+	// link manager
+	$('body').on('click', 'a', function(){
+		chrome.tabs.create({url: $(this).attr('href')});
+		return false;
+	});
 });
 
 
@@ -24,8 +30,6 @@ function historySearch(length, lang) {
 	}
 
 	kw = langKeywords[lang];
-
-	console.log(kw)
 
 	chrome.history.search({
 		'text': 'wordreference',
@@ -83,9 +87,11 @@ function historySearch(length, lang) {
 
 	setTimeout(function(){
 		vocab.forEach(function(word) {
-			$('body').append('<p class="vocabWord"><a href=' + word.url + '>' + word.term + ' [' + word.lang + ']</p></a>');
+			$('.results-container').append('<div class="vocab-word" id="' + word.lang + '"><a href=' + word.url + '><p>' + word.term + '</a></p></div>');
 		});
-	}, 400);
+	}, 600);
+
+	$(".results-container:nth-child(odd)").css("background-color", "blue");
 
 	console.log(vocab);
 }
